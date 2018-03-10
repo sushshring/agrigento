@@ -14,7 +14,6 @@ from config.hooked_config import *
 
 from emulator.utils import convert_cert
 
-
 logging.basicConfig(level=LOGGING_LEVEL,
                     format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s',
                     datefmt='%d-%m-%Y %H:%M:%S')
@@ -59,7 +58,7 @@ class ADBDriver:
     def get_device_names():
         cmd = [ADB_PATH, 'devices']
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+                             stderr=subprocess.PIPE)
 
         out, err = p.communicate()
 
@@ -74,24 +73,22 @@ class ADBDriver:
 
         return names
 
-
     @staticmethod
     def get_device_ipaddress(device_name):
         cmd = [ADB_PATH, '-s', device_name, 'shell', 'ifconfig', 'wlan0']
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+                             stderr=subprocess.PIPE)
 
         out, err = p.communicate()
         ipaddress = out.split(' ')[2]
         return ipaddress
-
 
     def adb_cmd(self, args, cmd_wait_time=CMD_WAIT_TIME):
         cmd = [self.adb_path, '-s', self.device_name]
         cmd.extend(args)
         logger.debug('Executing ' + ' '.join(cmd))
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
+                             stderr=subprocess.PIPE)
 
         signalset = False
         # Install an alarm if there was no one installed yet.
@@ -112,15 +109,14 @@ class ADBDriver:
             raise ADBDriverError('Timeout executing adb command: ' + str(cmd))
 
         return out, err
-
 
     def adb_su_cmd(self, args, cmd_wait_time=CMD_WAIT_TIME):
         cmd = self.adb_path + ' -s ' + self.device_name
         cmd = cmd + ' shell su -c \'{0}\''.format(args)
         logger.debug('Executing ' + cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE,
-                                  shell=True)
+                             stderr=subprocess.PIPE,
+                             shell=True)
 
         signalset = False
         # Install an alarm if there was no one installed yet.
@@ -142,12 +138,10 @@ class ADBDriver:
 
         return out, err
 
-
     def adb_sighandler(self, signum, frame):
         # Restore to default signal handler
         signal.signal(signal.SIGALRM, signal.SIG_DFL)
         raise ADBDriverError('Could not execute adb command: timeout')
-
 
     def waitfor(self, cmd, result):
         while True:
@@ -163,14 +157,12 @@ class ADBDriver:
                 raise ADBDriverError('emulator process terminated\n' +
                                      'out: ' + out + '\nerr: ' + err)
 
-
     def completeboot(self):
         # wait until the emulator is booted
         self.waitfor(['shell', 'getprop', 'dev.bootcomplete'], '1')
         self.waitfor(['shell', 'getprop', 'sys.boot_completed'], '1')
         self.waitfor(['shell', 'getprop', 'init.svc.bootanim'], 'stopped')
         self.waitfor(['shell', 'pm', 'path', 'android'], 'package')
-
 
     def install_cert(self, cert_path=CERT_PATH):
         cert_path = convert_cert(cert_path)
@@ -185,7 +177,6 @@ class ADBDriver:
         self.adb_su_cmd('chmod 644 /system/etc/security/cacerts/' + cert_name)
         self.adb_su_cmd('touch -t /system/etc/security/cacerts/' + cert_name)
 
-
     def get_UID(self, package):
         cmd = ['shell', 'dumpsys', 'package', package, '|', 'grep', 'userId=']
         out, err = self.adb_cmd(cmd)
@@ -194,13 +185,11 @@ class ADBDriver:
 
         return out
 
-
     def get_ipaddress(self):
         cmd = ['shell', 'ifconfig', 'wlan0']
         out, err = self.adb_cmd(cmd)
         ipaddress = out.split(' ')[2]
         return ipaddress
-
 
     def set_iptables(self, package, proxy_ip=PROXY_IP):
         uid = self.get_UID(package)
@@ -208,14 +197,12 @@ class ADBDriver:
                         '--uid-owner {0} -j MARK --set-mark 0x15'.format(uid))
         self.adb_su_cmd('ip rule add fwmark 0x15 table 0x15')
         self.adb_su_cmd('ip route add default via {0} table 0x15'.format(
-                                                                    proxy_ip))
-
+            proxy_ip))
 
     def del_iptables(self, package):
         uid = self.get_UID(package)
         self.adb_su_cmd('iptables -t mangle -D OUTPUT -p TCP -m owner ' + \
                         '--uid-owner {0} -j MARK --set-mark 0x15'.format(uid))
-
 
     def turn_on_screen(self):
         logger.debug('Turning on screen')
@@ -224,14 +211,12 @@ class ADBDriver:
         if 'false' in out:
             self.adb_cmd(['shell', 'input', 'keyevent', '26'])
 
-
     def turn_off_screen(self):
         logger.debug('Turning off screen')
         out, err = self.adb_cmd(['shell', 'dumpsys', 'power', '|', 'grep',
                                  'mScreenOn'])
         if 'true' in out:
             self.adb_cmd(['shell', 'input', 'keyevent', '26'])
-
 
     def unlock(self, pin=None):
         logger.debug('Unlocking device')
@@ -243,7 +228,6 @@ class ADBDriver:
             time.sleep(2)
             self.adb_cmd(['shell', 'input', 'keyevent', '66'])
 
-
     def set_record_ts(self, record):
         aux = ['elapsedRealtime',
                'elapsedRealtimeNanos',
@@ -251,7 +235,6 @@ class ADBDriver:
                'uptimeMillis',
                'currentTimeMillis',
                'nanoTime']
-
 
         if record:
             self.delete_folder(CRYPTOHOOKER_TS_FOLDER)
@@ -267,32 +250,28 @@ class ADBDriver:
             self.adb_su_cmd('rm ' + RECORD_TS_FILE)
             self.adb_su_cmd('chmod 777 ' + TS_FILES_BASE + '*')
 
-
     def start_activity(self, package, activity):
         logger.debug('Starting activity ' + activity)
         self.adb_cmd(['shell', 'am', 'start', '-n', package + '/' + activity])
-
 
     def start_capturing(self, filename):
         logger.debug('Waiting for device')
         self.adb_cmd(['emu', 'network', 'capture', 'start', filename])
         logger.debug('Stared capturing')
 
-
     def stop_capturing(self):
         logger.debug('Stopping capturing')
         self.adb_cmd(['emu', 'network', 'capture', 'stop'])
-
 
     def start_monkey(self, package=None, seed=None):
         logger.debug('Starting monkey')
         self.turn_on_screen()
 
         cmd = ['shell', 'monkey',
-                        '--throttle', THROTTLE,
-                        '--pct-syskeys', PCT_SYSKEYS,
-                        '--pct-anyevent', PCT_ANYEVENT
-              ]
+               '--throttle', THROTTLE,
+               '--pct-syskeys', PCT_SYSKEYS,
+               '--pct-anyevent', PCT_ANYEVENT
+               ]
 
         if IGNORE_CRASHES:
             cmd.append('--ignore-crashes')
@@ -313,11 +292,17 @@ class ADBDriver:
 
         return self.adb_cmd(cmd, cmd_wait_time=MONKEY_TIMEOUT)
 
-
     def kill_monkey(self):
-        pid = self.adb_su_cmd('ps | grep com.android.commands.monkey ' +\
+        pid = self.adb_su_cmd('ps | grep com.android.commands.monkey ' + \
                               '|awk \'{print $2}\'')[0]
         self.adb_su_cmd('kill ' + pid.strip())
+
+    def start_monkey_runner(self):
+        logger.debug('Starting monkey runner')
+        self.turn_on_screen()
+
+        cmd = ['']
+
 
 
     def install(self, filename):
@@ -339,7 +324,6 @@ class ADBDriver:
 
         raise ADBDriverError('Error installing APK {0}. Reached max tries')
 
-
     def uninstall(self, package):
         logger.debug('Uninstalling package ' + package)
         self.adb_cmd(['shell', 'pm', 'clear', package])
@@ -347,17 +331,14 @@ class ADBDriver:
         # self.adb_cmd(['shell', 'pm', 'clear', 'com.android.vending'])
         out, err = self.adb_cmd(['uninstall', package])
 
-
     def get_file(self, src_path, dst_path):
         logger.debug('Getting file {0}'.format(src_path))
         return self.adb_cmd(['pull', src_path, dst_path])
-
 
     def write_file(self, file_path, content):
         logger.debug('Writing file {0}'.format(file_path))
         self.adb_su_cmd('rm ' + file_path)
         self.adb_su_cmd('echo ' + content + ' > ' + file_path)
-
 
     def set_logfile(self, file_path):
         logger.debug('Setting logfile {0}'.format(file_path))
@@ -365,24 +346,20 @@ class ADBDriver:
         self.adb_su_cmd('touch ' + file_path)
         self.adb_su_cmd('chmod 777 ' + file_path)
 
-
     def create_writeble_folder(self, folder_path):
         logger.debug('Creating folder {0}'.format(folder_path))
         self.adb_su_cmd('mkdir ' + folder_path)
         self.adb_su_cmd('chmod -R 777 ' + folder_path)
 
-
     def delete_folder(self, folder_path):
         logger.debug('Deleting folder {0}'.format(folder_path))
         self.adb_su_cmd('rm -r ' + folder_path)
-
 
     def create_writeble_ram_folder(self, folder_path):
         logger.debug('Creating RAM folder {0}'.format(folder_path))
         self.adb_su_cmd('mkdir ' + folder_path)
         self.adb_su_cmd('chmod 777 ' + folder_path)
         self.adb_su_cmd('mount -o size=256M -t tmpfs tmpfs ' + folder_path)
-
 
     def delete_ram_folder(self, folder_path):
         logger.debug('Deleting RAM folder {0}'.format(folder_path))
@@ -391,16 +368,13 @@ class ADBDriver:
         self.adb_su_cmd('rm -r ' + folder_path + '/*')
         self.adb_su_cmd('rm -r ' + folder_path)
 
-
     def flush_logcat(self):
         logger.debug('Flushing logcat')
         return self.adb_cmd(['logcat', '-c'])
 
-
     def dump_logcat(self, file_path, tag):
         logger.debug('Flushing logcat')
         return self.adb_cmd(['logcat', '-f', file_path, '-d', '-s', tag])
-
 
     def start(self):
         if self.running:
@@ -408,7 +382,7 @@ class ADBDriver:
             return
 
         cmd = [self.emulator, '-avd', self.avd_name,
-                              '-no-audio']
+               '-no-audio']
 
         if self.nowindow:
             cmd.extend(['-no-window'])
@@ -422,13 +396,12 @@ class ADBDriver:
         logger.debug('Starting the emulator with arguments: ' + str(cmd))
         try:
             self.emu_process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                                                     stderr=subprocess.PIPE)
+                                                stderr=subprocess.PIPE)
         except OSError as exception:
             raise ADBDriverError('Could not start emulator: ' + str(exception))
 
         # should be up and running now.
         self.running = True
-
 
     def stop(self):
         logger.debug('Terminanting emulator')
@@ -440,14 +413,13 @@ class ADBDriver:
             except OSError as exception:
                 # Do not raise an exception if there's no such process to kill.
                 if exception.errno != 3:
-                   raise ADBDriverError('Could not stop emulator: ' +
-                                        str(exception))
+                    raise ADBDriverError('Could not stop emulator: ' +
+                                         str(exception))
 
             self.emu_process = None
 
         # no longer running.
         self.running = False
-
 
     def fresh_copy(self):
         logger.debug('Generating a fresh copy...')
@@ -481,7 +453,6 @@ class ADBDriver:
         self.avd_tmp_ini = tmp_ini_path
         self.avd_tmp_home = tmp_home
 
-
     def destroy(self):
         logger.debug('Destroying copy')
 
@@ -514,41 +485,33 @@ class ADBDriver:
 
         return self.adb_cmd(cmd)
 
-
     def set_phone_number(self, phone_number):
         logger.debug('Setting phone number')
         self.write_file(PHONE_NUMBER_FILE, phone_number)
-
 
     def set_mac_addr(self, mac_addr):
         logger.debug('Setting mac address')
         self.write_file(MAC_ADDR_FILE, mac_addr)
 
-
     def set_sim_serial_num(self, sim_serial_num):
         logger.debug('Setting sim serial num')
         self.write_file(SIM_SERIAL_NUM_FILE, sim_serial_num)
-
 
     def set_subscriber_id(self, subscriber_id):
         logger.debug('Setting subscriber id')
         self.write_file(SUBSCRIBER_ID_FILE, subscriber_id)
 
-
     def set_device_id(self, device_id):
         logger.debug('Setting device id')
         self.write_file(DEVICE_ID_FILE, device_id)
-
 
     def set_email(self, email):
         logger.debug('Setting email')
         self.write_file(EMAIL_FILE, email)
 
-
     def set_gender(self, gender):
         logger.debug('Setting gender')
         self.write_file(GENDER_FILE, gender)
-
 
     def set_contacts(self, contacts):
         logger.debug('Setting contacts')
@@ -568,7 +531,6 @@ class ADBDriver:
             self.adb_cmd(['shell', 'input', 'keyevent', '4'])
             self.adb_cmd(['shell', 'input', 'keyevent', '4'])
             time.sleep(1)
-
 
     def set_android_id(self, android_id):
         logger.debug('Setting android id')
