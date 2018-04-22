@@ -222,7 +222,7 @@ class DynamicAnalysis(object):
 
         try:
             self.adb.start_activity(package, activity)
-        except ADBDriverError as e:
+        except ADBDriverError:
             self.finish_run()
             # remove flow file
             if os.path.isfile(flow_file):
