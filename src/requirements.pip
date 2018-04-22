@@ -13,6 +13,7 @@ decorator==4.0.9
 editdistance==0.3.1
 enum34==1.1.4
 Flask==0.10.1
+androidviewclient==15.2.2
 h2==2.3.0
 hpack==2.2.0
 html2text==2016.4.2
