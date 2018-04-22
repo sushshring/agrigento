@@ -209,7 +209,7 @@ class DynamicAnalysis(object):
 
         try:
             self.adb.install(self.apk_path)
-        except ADBDriverError as e:
+        except ADBDriverError:
             self.finish_run()
             # remove flow file
             if os.path.isfile(flow_file):
@@ -233,7 +233,7 @@ class DynamicAnalysis(object):
 
         try:
             self.adb.start_monkey(package=package, seed=SEED)
-        except ADBDriverError as e:
+        except ADBDriverError:
             logger.warning('Monkey execution hit timeout')
             self.adb.kill_monkey()
 
@@ -261,9 +261,11 @@ class DynamicAnalysis(object):
             package = get_APK_package_name(self.apk_path)
             self.adb.del_iptables(package)
 
+
             try:
+
                 self.adb.uninstall(package)
-            except ADBDriverError as e:
+            except ADBDriverError:
                 logger.warning('Uninstall FAILED')
 
             self.adb.delete_folder('/data/data/' + package)
