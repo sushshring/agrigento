@@ -487,10 +487,11 @@ class ADBDriver:
         # remove the temporary .ini (if any).
         try:
             os.remove(self.avd_tmp_ini)
-        except OSError as exception:
+        except OSError:
             # do not raise an exception if the file does not exist.
-            if exception.errno != 2:
-                raise exception
+            # if exception.errno != 2:
+            #     raise exception
+            pass
 
     # Set sensitive information values
 
