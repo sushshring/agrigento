@@ -340,8 +340,8 @@ class ADBDriver:
                     logger.warning('Error installing APK {0}. Stdout: {1}. '
                                    'Stderr: {2}.'.format(filename, out, err))
 
-            except ADBDriverError as e:
-                logger.warning('Could not install APK:' + str(e))
+            except ADBDriverError:
+                logger.warning('Could not install APK:')
 
         raise ADBDriverError('Error installing APK {0}. Reached max tries')
 
@@ -418,8 +418,8 @@ class ADBDriver:
         try:
             self.emu_process = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
-        except OSError as exception:
-            raise ADBDriverError('Could not start emulator: ' + str(exception))
+        except OSError:
+            raise ADBDriverError('Could not start emulator: ')
 
         # should be up and running now.
         self.running = True
