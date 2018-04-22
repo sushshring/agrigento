@@ -1,0 +1,7 @@
+runner:
+  com.facebook.katana:
+    username_box: ''
+    username: ''
+    password_box: ''
+    password: ''
+    login_button: ''

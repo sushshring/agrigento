@@ -3,10 +3,12 @@ from com.dtmilano.android.viewclient import ViewClient
 
 class MonkeyRunner:
 
-    def __init__(self, apk_path, package_name, activity_name):
+    def __init__(self, apk_path='', package_name='', activity_name=''):
         self.apk_path = apk_path
         self.package_name = package_name
         self.activity_name = activity_name
+        self.vc = None
+        self.device = None
         pass
 
     def getConnection(self):

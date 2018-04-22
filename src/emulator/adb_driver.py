@@ -6,6 +6,9 @@ import re
 import tempfile
 import shutil
 import signal
+import yaml
+
+YAML_FILE = "../packages.yaml"
 
 from config.emulator_config import *
 from config.proxy_config import *
@@ -13,6 +16,8 @@ from config.general_config import LOGGING_LEVEL
 from config.hooked_config import *
 
 from emulator.utils import convert_cert
+
+from monkeyrunner.monkey_wrapper import MonkeyRunner
 
 logging.basicConfig(level=LOGGING_LEVEL,
                     format='[%(asctime)s] %(levelname)s:%(name)s:%(message)s',
@@ -264,8 +269,24 @@ class ADBDriver:
         self.adb_cmd(['emu', 'network', 'capture', 'stop'])
 
     def start_monkey(self, package=None, seed=None):
+        yamlfile = open(YAML_FILE, 'r')
+        yamlstring = yamlfile.read()
+        packages = yaml.load(yamlstring)
+
         logger.debug('Starting monkey')
         self.turn_on_screen()
+
+
+        if packages['runner'][package]:
+            # Run the monkeyrunner first
+            app_dict = packages['runner'][package]
+            mr = MonkeyRunner().getConnection()
+            mr.inputText(app_dict['username_box'], app_dict['username'])
+            mr.inputText(app_dict['password_box'], app_dict['password'])
+            mr.touchButton(app_dict['login_button'])
+            pass
+
+
 
         cmd = ['shell', 'monkey',
                '--throttle', THROTTLE,
