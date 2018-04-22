@@ -9,5 +9,6 @@ apt-get install libpcap0.8 libpcap0.8-dev
 apt-get install libjpeg-dev
 apt-get install python-lxml
 apt-get install libxml2-dev libxslt1-dev
+apt-get install adb
 
 pip install -r requirements.pip

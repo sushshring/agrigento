@@ -1,0 +1,6 @@
+- application:
+  name: Facebook
+  - activity: com.facebook.LoginActivity
+  username: sush.shring
+- application:
+    name: snapchat
