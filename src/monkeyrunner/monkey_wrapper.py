@@ -1,4 +1,4 @@
-from com.android.monkeyrunner import MonkeyRunner, MonkeyDevice
+# from com.android.monkeyrunner import MonkeyRunner, MonkeyDevice
 from com.dtmilano.android.viewclient import ViewClient
 
 class MonkeyRunner:
