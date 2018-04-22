@@ -431,11 +431,11 @@ class ADBDriver:
             try:
                 self.emu_process.terminate()
                 self.emu_process.wait()
-            except OSError as exception:
+            except OSError:
                 # Do not raise an exception if there's no such process to kill.
-                if exception.errno != 3:
-                    raise ADBDriverError('Could not stop emulator: ' +
-                                         str(exception))
+                # if exception.errno != 3:
+                #     raise ADBDriverError('Could not stop emulator: ' +
+                #                          str(exception))
 
             self.emu_process = None
 
