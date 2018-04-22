@@ -436,6 +436,7 @@ class ADBDriver:
                 # if exception.errno != 3:
                 #     raise ADBDriverError('Could not stop emulator: ' +
                 #                          str(exception))
+                pass
 
             self.emu_process = None
 
