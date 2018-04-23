@@ -58,7 +58,7 @@ class DynamicAnalysis(object):
         self.start_ts = int(time())
         logger.info('Starting analysis')
 
-        ip_address = ADBDriver.get_device_ipaddress(self.device_name)
+        ip_address = self.device_name # ADBDriver.get_device_ipaddress(self.device_name)
         self.proxy_port = int('40' + ip_address.split('.')[-1])
 
         # set proxy iptables
