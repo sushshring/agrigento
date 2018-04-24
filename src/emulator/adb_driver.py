@@ -283,9 +283,9 @@ class ADBDriver:
             # Run the monkeyrunner first
             app_dict = packages['runner']['com.facebook.katana']
             mr = MonkeyRunner().getConnection()
-            mr.inputText(app_dict['username_box'], app_dict['username'])
-            mr.inputText(app_dict['password_box'], app_dict['password'])
-            mr.touchButton(app_dict['login_button'])
+            mr.inputTextAtCordinate(app_dict['username_box_x'], app_dict['username_box_y'], app_dict['username'])
+            mr.inputTextAtCordinate(app_dict['password_box_x'], app_dict['password_box_y'], app_dict['password'])
+            mr.touchButtonAtCordinate(app_dict['login_button_x'],app_dict['login_button_y'])
             pass
 
 

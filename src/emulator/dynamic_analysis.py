@@ -37,6 +37,13 @@ class DynamicAnalysisError(Exception):
         return self.msg
 
 
+def get_APK_package_name(name):
+    return 'com.facebook.katana'
+
+def get_APK_main_activity(namne):
+    return 'FacebookLoginActivity'
+
+
 class DynamicAnalysis(object):
     """DynamicAnalysis"""
 
