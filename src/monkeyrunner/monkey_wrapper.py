@@ -1,6 +1,7 @@
 # from com.android.monkeyrunner import MonkeyRunner, MonkeyDevice
 from com.dtmilano.android.viewclient import ViewClient
 
+
 class MonkeyRunner:
 
     def __init__(self, apk_path='', package_name='', activity_name=''):
@@ -16,6 +17,7 @@ class MonkeyRunner:
         vc = ViewClient(device=device, serialno=serialno)
         self.vc = vc
         self.device = device
+        return self
         pass
 
     def launchActivity(self, package_name=None, activity_name=None):
