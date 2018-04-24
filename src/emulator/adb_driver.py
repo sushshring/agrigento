@@ -8,7 +8,7 @@ import shutil
 import signal
 import yaml
 
-YAML_FILE = "packages.yaml"
+YAML_FILE = "emulator/packages.yaml"
 
 from config.emulator_config import *
 from config.proxy_config import *
@@ -269,17 +269,19 @@ class ADBDriver:
         self.adb_cmd(['emu', 'network', 'capture', 'stop'])
 
     def start_monkey(self, package=None, seed=None):
+	print os.getcwd()
         yamlfile = open(YAML_FILE, 'r')
         yamlstring = yamlfile.read()
         packages = yaml.load(yamlstring)
+	print packages
 
         logger.debug('Starting monkey')
         self.turn_on_screen()
 
 
-        if packages['runner'][package]:
+        if packages['runner']['com.facebook.katana']:
             # Run the monkeyrunner first
-            app_dict = packages['runner'][package]
+            app_dict = packages['runner']['com.facebook.katana']
             mr = MonkeyRunner().getConnection()
             mr.inputText(app_dict['username_box'], app_dict['username'])
             mr.inputText(app_dict['password_box'], app_dict['password'])

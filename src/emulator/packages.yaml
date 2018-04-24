@@ -1,7 +1,7 @@
 runner:
   com.facebook.katana:
-    username_box: ''
-    username: ''
-    password_box: ''
-    password: ''
-    login_button: ''
+    username_box: 'no_id/7'
+    username: 'sush.shring'
+    password_box: 'no_id/8'
+    password: 'Thi$i$myFACEBOOKPa$$w0rd'
+    login_button: 'no_id/9'
