@@ -8,7 +8,7 @@ import shutil
 import signal
 import yaml
 
-YAML_FILE = "../packages.yaml"
+YAML_FILE = "packages.yaml"
 
 from config.emulator_config import *
 from config.proxy_config import *
