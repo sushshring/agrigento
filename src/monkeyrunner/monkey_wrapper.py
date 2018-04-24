@@ -31,6 +31,23 @@ class MonkeyRunner:
         self.device.startActivity(package_name + '/' + activity_name)
         pass
 
+    def inputTextAtCordinate(self, xcordinate, ycordinate, text):
+        if self.vc.getSdkVersion() >= 16:
+            views = self.vc.touch(xcordinate, ycordinate)
+            self.device.type(text)
+            pass
+        else:
+            raise TypeError("Illegal SDK version")
+        pass
+
+    def touchButtonAtCordinate(self, xcordinate, ycordinate):
+        if self.vc.getSdkVersion() >= 16:
+            self.vc.touch(xcordinate, ycordinate)
+            pass
+        else:
+            raise TypeError("Illegal SDK version")
+        pass
+
     def inputText(self, textbox, text):
         if self.vc.getSdkVersion() >= 16:
             self.vc.findViewByIdOrRaise(textbox).touch()
