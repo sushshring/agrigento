@@ -269,15 +269,39 @@ class ADBDriver:
         self.adb_cmd(['emu', 'network', 'capture', 'stop'])
 
     def start_monkey(self, package=None, seed=None):
-	print os.getcwd()
+        cmd = ['shell', 'monkey',
+               '--throttle', THROTTLE,
+               '--pct-syskeys', PCT_SYSKEYS,
+               '--pct-anyevent', PCT_ANYEVENT
+               ]
+
+        if IGNORE_CRASHES:
+            cmd.append('--ignore-crashes')
+
+        if IGNORE_TIMEOUTS:
+            cmd.append('--ignore-timeouts')
+
+        if IGNORE_SECURITY_EXCEPTIONS:
+            cmd.append('--ignore-security-exceptions')
+
+        if seed:
+            cmd.extend(['-s', seed])
+
+        if package:
+            cmd.extend(['-p', package])  # only target app
+
+        cmd.append(NUM_EVENTS)
+        self.adb_cmd(cmd, cmd_wait_time=MONKEY_TIMEOUT)
+
+        self.kill_monkey()
+        print os.getcwd()
         yamlfile = open(YAML_FILE, 'r')
         yamlstring = yamlfile.read()
         packages = yaml.load(yamlstring)
-	print packages
+        print packages
 
         logger.debug('Starting monkey')
         self.turn_on_screen()
-
 
         if packages['runner']['com.facebook.katana']:
             # Run the monkeyrunner first
@@ -285,10 +309,8 @@ class ADBDriver:
             mr = MonkeyRunner().getConnection()
             mr.inputTextAtCordinate(app_dict['username_box_x'], app_dict['username_box_y'], app_dict['username'])
             mr.inputTextAtCordinate(app_dict['password_box_x'], app_dict['password_box_y'], app_dict['password'])
-            mr.touchButtonAtCordinate(app_dict['login_button_x'],app_dict['login_button_y'])
+            mr.touchButtonAtCordinate(app_dict['login_button_x'], app_dict['login_button_y'])
             pass
-
-
 
         cmd = ['shell', 'monkey',
                '--throttle', THROTTLE,
@@ -325,8 +347,6 @@ class ADBDriver:
         self.turn_on_screen()
 
         cmd = ['']
-
-
 
     def install(self, filename):
         for i in range(1, MAX_INSTALLATION_TRIALS):
