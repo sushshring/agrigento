@@ -1,7 +1,7 @@
 runner:
   com.facebook.katana:
     username_box: 'no_id/7'
-    username: 'sush.shring'
+    username: 'cse597sush@psu.edu'
     password_box: 'no_id/8'
-    password: 'Thi$i$myFACEBOOKPa$$w0rd'
+    password: 'QAZWSX123'
     login_button: 'no_id/9'
