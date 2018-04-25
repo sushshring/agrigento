@@ -269,31 +269,7 @@ class ADBDriver:
         self.adb_cmd(['emu', 'network', 'capture', 'stop'])
 
     def start_monkey(self, package=None, seed=None):
-        cmd = ['shell', 'monkey',
-               '--throttle', THROTTLE,
-               '--pct-syskeys', PCT_SYSKEYS,
-               '--pct-anyevent', PCT_ANYEVENT
-               ]
-
-        if IGNORE_CRASHES:
-            cmd.append('--ignore-crashes')
-
-        if IGNORE_TIMEOUTS:
-            cmd.append('--ignore-timeouts')
-
-        if IGNORE_SECURITY_EXCEPTIONS:
-            cmd.append('--ignore-security-exceptions')
-
-        if seed:
-            cmd.extend(['-s', seed])
-
-        if package:
-            cmd.extend(['-p', package])  # only target app
-
-        cmd.append(NUM_EVENTS)
-        self.adb_cmd(cmd, cmd_wait_time=MONKEY_TIMEOUT)
-
-        self.kill_monkey()
+        self.adb_cmd("shell am -n com.facebook.katana/.LoginActivity")
         print os.getcwd()
         yamlfile = open(YAML_FILE, 'r')
         yamlstring = yamlfile.read()
